@@ -1,0 +1,82 @@
+{% extends 'navbar.html' %}
+{% block title %}Home Page{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+
+  {% if messages %}
+    <div class="alert alert-success">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h2 class="mb-4">All Blogs</h2>
+
+  {% for blog in blogs %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title">{{ blog.author.username }}</h5>
+          <div class="btn-group" role="group" aria-label="Blog Actions">
+            <!-- Edit Button -->
+            <a href="{% url 'edit_blog' blog.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <!-- Delete Button (Example: using a form for confirmation) -->
+            <form method="post" action="{% url 'delete_blog' blog.id %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this blog?')">Delete</button>
+            </form>
+          </div>
+        </div>
+
+        <h5 class="card-title">{{ blog.title }}</h5>
+        <p class="card-text">{{ blog.content }}</p>
+        
+        {% if blog.image %}
+          <img src="{{ blog.image.url }}" class="img-fluid" alt="{{ blog.title }}">
+        {% endif %}
+
+        <!-- Font Awesome Icons for Like and Comment -->
+        <div class="mt-3">
+          <form method="post" action="{% url 'like_blog' blog.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">
+                {% if request.user in blog.likes.all %}
+                    Unlike
+                {% else %}
+                    Like
+                {% endif %}
+            </button>
+          </form>
+          <span class="ml-2">
+            <i class="fas fa-heart"></i>
+            {{ blog.total_likes }} Likes
+          </span>
+        </div>
+
+        <div class="mt-3">
+          <h5>Add a Comment</h5>
+          <form method="post" action="{% url 'add_comment' blog.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <textarea class="form-control" name="content" rows="3" placeholder="Type your comment here..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Comment</button>
+          </form>
+        </div>
+
+        <div class="mt-3">
+          <h5>Comments</h5>
+          {% for comment in blog.comments.all %}
+            <div class="comment">
+              <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+            </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock body %}

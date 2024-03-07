@@ -1,0 +1,26 @@
+<!-- edit_blog.html -->
+
+{% extends 'navbar.html' %}
+{% block title %}Edit Blog{% endblock title %}
+
+{% block body %}
+  <div class="container mt-5">
+    <h2>Edit Blog</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{ blog.title }}" required>
+      </div>
+      <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea class="form-control" id="content" name="content" rows="4" required>{{ blog.content }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" class="form-control-file" id="image" name="image">
+      </div>
+      <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+  </div>
+{% endblock body %}
